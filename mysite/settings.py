@@ -110,7 +110,7 @@ if os.environ.get('VERCEL_DEPLOYMENT') == 'true':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': '/tmp/db.sqlite3',  # Use /tmp directory which is writable
         }
     }
     
@@ -258,21 +258,26 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs/django.log',
-            'formatter': 'verbose',
-        },
+        # Conditionally use file handler only if not on Vercel
+        **(
+            {} if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else {
+                'file': {
+                    'level': 'INFO',
+                    'class': 'logging.FileHandler',
+                    'filename': BASE_DIR / 'logs/django.log',
+                    'formatter': 'verbose',
+                }
+            }
+        ),
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'] if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
         'polls': {
-            'handlers': ['console', 'file'],
+            'handlers': ['console'] if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else ['console', 'file'],
             'level': 'INFO',
             'propagate': False,
         },
