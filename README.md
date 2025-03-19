@@ -137,4 +137,4 @@ This project follows PEP 8 style guide and uses the following tools:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details. # polling-visualization
