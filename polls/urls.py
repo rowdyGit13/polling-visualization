@@ -13,6 +13,9 @@ router.register(r'analytics', api_views.QuestionAnalyticsViewSet, basename='anal
 
 app_name = "polls"
 urlpatterns = [
+    # Debug view for Vercel
+    path("vercel-test/", views.vercel_landing, name="vercel_landing"),
+    
     # Standard web views
     path("", views.index, name="index"),
     path("<int:question_id>/", views.detail, name="detail"),

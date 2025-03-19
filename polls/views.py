@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.views import generic
@@ -18,6 +18,7 @@ import io
 import base64
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import numpy as np
+import os
 
 from .models import Question, Choice, UserResponse, QuestionAnalytics
 from .forms import CustomUserCreationForm
@@ -265,3 +266,13 @@ def statistics_view(request):
     }
     
     return render(request, "polls/statistics.html", {"stats": stats})
+
+# Add this simple view for Vercel debugging
+def vercel_landing(request):
+    """Super simple view to test Vercel deployment"""
+    return HttpResponse(
+        '<html><body><h1>Polls App is Running!</h1>'
+        '<p>This is a minimal page for testing Vercel deployment.</p>'
+        f'<p>Running in environment: {os.environ.get("VERCEL_DEPLOYMENT", "local")}</p>'
+        '</body></html>'
+    )

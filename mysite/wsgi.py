@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
 
 import os
 import sys
+import traceback
 
 try:
     from django.core.wsgi import get_wsgi_application
@@ -18,14 +19,16 @@ try:
     application = get_wsgi_application()
     app = application
 except Exception as e:
-    # Write error to stderr for Vercel logs
-    print(f"Error in WSGI application initialization: {str(e)}", file=sys.stderr)
+    # Print full traceback
+    error_details = traceback.format_exc()
+    print(f"Error in WSGI application initialization:\n{error_details}", file=sys.stderr)
     
     # Create a simple WSGI application that returns the error
     def application(environ, start_response):
         status = '500 Internal Server Error'
         response_headers = [('Content-type', 'text/plain')]
         start_response(status, response_headers)
-        return [f"Application initialization failed: {str(e)}".encode()]
+        error_message = f"Application initialization failed:\n{error_details}"
+        return [error_message.encode()]
     
     app = application

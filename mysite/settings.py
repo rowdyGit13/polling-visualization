@@ -14,8 +14,10 @@ from pathlib import Path
 import os
 import dotenv
 
-# Load environment variables from .env.local file
-dotenv.load_dotenv('.env.local')
+# Only load .env.local if the file exists (won't exist on Vercel)
+env_file = '.env.local'
+if os.path.isfile(env_file):
+    dotenv.load_dotenv(env_file)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,7 +36,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.vercel.app',
-    '.now.sh'
+    '.now.sh',
+    '*',  # Temporarily allow all hosts for debugging
 ]
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
@@ -54,15 +57,20 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'rest_framework.authtoken',
-    'django_celery_beat',  # for periodic tasks
-    'django_celery_results',  # for storing task results
     'corsheaders',  # for handling CORS
 ]
+
+# Only add these apps if not on Vercel to reduce dependencies
+if os.environ.get('VERCEL_DEPLOYMENT') != 'true':
+    INSTALLED_APPS.extend([
+        'django_celery_beat',
+        'django_celery_results',
+    ])
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # CORS middleware
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -106,27 +114,10 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DATABASE_NAME', 'mydb'),
-        'USER': os.environ.get('DATABASE_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'postgres'),
-        'HOST': os.environ.get('DATABASE_HOST', 'localhost'),
-        'PORT': os.environ.get('DATABASE_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '/tmp/db.sqlite3',
     }
 }
-
-# Use SQLite for Vercel deployment if configured
-if os.environ.get('VERCEL_DEPLOYMENT') == 'true':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '/tmp/db.sqlite3',  # Use /tmp directory which is writable
-        }
-    }
-    
-    # Disable Celery on Vercel
-    CELERY_TASK_ALWAYS_EAGER = True
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -174,10 +165,10 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 
-# Email settings for password reset (for development)
+# Email settings (simplified)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# REST Framework settings
+# Simplified REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -186,25 +177,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-    'DEFAULT_FILTER_BACKENDS': [
-        'rest_framework.filters.SearchFilter',
-        'rest_framework.filters.OrderingFilter',
-    ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
-    ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
-        'user': '1000/day',
-    },
 }
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React frontend
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 
@@ -216,78 +193,27 @@ CACHES = {
     }
 }
 
-# Celery settings
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'default'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = TIME_ZONE
+# Celery settings - disable on Vercel
+CELERY_TASK_ALWAYS_EAGER = True if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else False
 
-# Celery Beat schedule settings
-CELERY_BEAT_SCHEDULE = {
-    'update-analytics-every-hour': {
-        'task': 'polls.tasks.update_all_analytics',
-        'schedule': 3600.0,  # Run every hour
-    },
-    'generate-daily-report': {
-        'task': 'polls.tasks.generate_daily_report',
-        'schedule': 86400.0,  # Run once a day
-        'options': {'expires': 43200},  # Task expires after 12 hours
-    },
-}
-
-# Admin email for reports
-ADMIN_EMAILS = os.environ.get('ADMIN_EMAILS', 'admin@example.com').split(',')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@polls.example.com')
-
-# Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-if not DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.environ.get('EMAIL_HOST')
-    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
-
-# Logging configuration
+# Logging - simplified for Vercel
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-    },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
         },
-        # Conditionally use file handler only if not on Vercel
-        **(
-            {} if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else {
-                'file': {
-                    'level': 'INFO',
-                    'class': 'logging.FileHandler',
-                    'filename': BASE_DIR / 'logs/django.log',
-                    'formatter': 'verbose',
-                }
-            }
-        ),
     },
     'loggers': {
         'django': {
-            'handlers': ['console'] if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
         },
         'polls': {
-            'handlers': ['console'] if os.environ.get('VERCEL_DEPLOYMENT') == 'true' else ['console', 'file'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propagate': False,
         },
