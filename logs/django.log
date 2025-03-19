@@ -450,3 +450,7 @@ INFO 2025-03-19 21:22:23,876 autoreload /Users/sg44574/Dropbox/Coding/polling-vi
 INFO 2025-03-19 21:22:24,501 autoreload Watching for file changes with StatReloader
 INFO 2025-03-19 21:22:59,931 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
 INFO 2025-03-19 21:23:00,465 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 21:30:49,446 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
+INFO 2025-03-19 21:30:50,110 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 21:31:20,098 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
+INFO 2025-03-19 21:31:20,723 autoreload Watching for file changes with StatReloader

@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dotenv
+
+# Load environment variables from .env.local file
+dotenv.load_dotenv('.env.local')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@3)14!09f@j851-hm5fiy8_uvg_t*zio3o&+2r8kvu!3ow_r(z'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-@3)14!09f@j851-hm5fiy8_uvg_t*zio3o&+2r8kvu!3ow_r(z')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -100,7 +105,7 @@ DATABASES = {
     }
 }
 
-# Use SQLite for Vercel deployment if DATABASE_URL is not set
+# Use SQLite for Vercel deployment if configured
 if os.environ.get('VERCEL_DEPLOYMENT') == 'true':
     DATABASES = {
         'default': {
@@ -202,7 +207,7 @@ CACHES = {
 }
 
 # Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_CACHE_BACKEND = 'default'
 CELERY_ACCEPT_CONTENT = ['json']
@@ -224,8 +229,18 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 # Admin email for reports
-ADMIN_EMAILS = ['admin@example.com']
-DEFAULT_FROM_EMAIL = 'noreply@polls.example.com'
+ADMIN_EMAILS = os.environ.get('ADMIN_EMAILS', 'admin@example.com').split(',')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@polls.example.com')
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if not DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 
 # Logging configuration
 LOGGING = {

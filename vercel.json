@@ -27,7 +27,6 @@
     "env": {
       "VERCEL_DEPLOYMENT": "true",
       "DJANGO_SETTINGS_MODULE": "mysite.settings",
-      "SECRET_KEY": "your-secret-key-here",
       "DEBUG": "False"
     }
   }
