@@ -3,9 +3,26 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.contrib.postgres.fields import ArrayField
-from django.contrib.postgres.search import SearchVectorField
-from django.contrib.postgres.indexes import GinIndex
+from django.conf import settings
+
+# Conditionally import PostgreSQL-specific fields
+try:
+    from django.contrib.postgres.fields import ArrayField
+    from django.contrib.postgres.search import SearchVectorField
+    from django.contrib.postgres.indexes import GinIndex
+    POSTGRES_AVAILABLE = True
+except ImportError:
+    POSTGRES_AVAILABLE = False
+    # Create dummy ArrayField for SQLite compatibility
+    class ArrayField(models.TextField):
+        def __init__(self, base_field, size=None, **kwargs):
+            kwargs['null'] = kwargs.get('null', True)
+            super().__init__(**kwargs)
+        
+        def deconstruct(self):
+            name, path, args, kwargs = super().deconstruct()
+            kwargs['base_field'] = models.CharField(max_length=50)
+            return name, path, args, kwargs
 
 
 class PublishedQuestionManager(models.Manager):
@@ -71,16 +88,26 @@ class QuestionAnalytics(models.Model):
     def __str__(self):
         return f"Analytics for {self.question.question_text[:30]}"
 
-class QuestionWithMetadata(models.Model):
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
-    tags = ArrayField(models.CharField(max_length=50), blank=True, default=list)
-    metadata = models.JSONField(default=dict, blank=True)
-    search_vector = SearchVectorField(null=True)
-    
-    class Meta:
-        indexes = [
-            GinIndex(fields=['search_vector'])
-        ]
+# Only create this model if PostgreSQL is available, otherwise create a simplified version
+if POSTGRES_AVAILABLE:
+    class QuestionWithMetadata(models.Model):
+        question = models.OneToOneField(Question, on_delete=models.CASCADE)
+        tags = ArrayField(models.CharField(max_length=50), blank=True, default=list)
+        metadata = models.JSONField(default=dict, blank=True)
+        search_vector = SearchVectorField(null=True)
         
-    def __str__(self):
-        return f"Metadata for {self.question.question_text[:30]}"
+        class Meta:
+            indexes = [
+                GinIndex(fields=['search_vector'])
+            ]
+            
+        def __str__(self):
+            return f"Metadata for {self.question.question_text[:30]}"
+else:
+    class QuestionWithMetadata(models.Model):
+        question = models.OneToOneField(Question, on_delete=models.CASCADE)
+        tags_text = models.TextField(blank=True, help_text="Comma-separated tags")
+        metadata_text = models.TextField(blank=True, help_text="JSON-formatted metadata")
+        
+        def __str__(self):
+            return f"Metadata for {self.question.question_text[:30]}"

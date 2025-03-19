@@ -1,0 +1,119 @@
+{% extends "polls/base.html" %}
+
+{% block title %}{{ category }} Questions{% endblock %}
+
+{% block content %}
+<div class="category-page">
+    <div class="category-header">
+        <h1>{{ category }} Questions</h1>
+        <p>Browse and answer questions about {{ category }}</p>
+    </div>
+    
+    {% if questions %}
+        <div class="question-list">
+            {% for question in questions %}
+                <div class="question">
+                    <h3>{{ question.question_text }}</h3>
+                    <div class="meta">
+                        <span class="published">Published: {{ question.pub_date|date:"M d, Y" }}</span>
+                    </div>
+                    <a href="{% url 'polls:detail' question.id %}" class="btn">Answer this question</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No questions available in this category.</p>
+        </div>
+    {% endif %}
+    
+    <div class="navigation">
+        <a href="{% url 'polls:index' %}" class="btn btn-outline">Back to All Questions</a>
+    </div>
+</div>
+
+<style>
+    .category-page {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    
+    .category-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    
+    .category-header h1 {
+        color: var(--primary);
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    .category-header p {
+        color: var(--text-light);
+        font-size: 18px;
+    }
+    
+    .question-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+    
+    .question {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .question:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .question h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+    
+    .meta {
+        font-size: 14px;
+        color: var(--text-light);
+        margin-bottom: 20px;
+    }
+    
+    .empty-state {
+        background: #f8f9fa;
+        padding: 30px;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .navigation {
+        text-align: center;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+    }
+    
+    .btn-outline:hover {
+        background: #f0f5fa;
+    }
+    
+    @media (max-width: 768px) {
+        .question-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %} 

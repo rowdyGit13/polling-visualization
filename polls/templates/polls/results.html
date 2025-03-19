@@ -6,56 +6,117 @@
 <div class="results">
     <h2>{{ question.question_text }}</h2>
     
+    <div class="chart-container">
+        <img src="{{ chart_img }}" alt="Results chart" class="results-chart">
+    </div>
+    
     <div class="results-list">
-        {% for choice in question.choice_set.all %}
+        {% for item in choices_with_percentage %}
             <div class="result-item">
                 <div class="result-text">
-                    {{ choice.choice_text }} — {{ choice.votes }} vote{{ choice.votes|pluralize }}
+                    {{ item.choice.choice_text }} — {{ item.choice.votes }} vote{{ item.choice.votes|pluralize }}
                 </div>
                 <div class="result-bar">
-                    {% with total=question.choice_set.all|dictsort:"votes"|last|getattribute:"votes" %}
-                        {% if total > 0 %}
-                            {% with percentage=choice.votes|div:total|mul:100|floatformat:0 %}
-                                <div class="bar" style="width: {{ percentage }}%;">
-                                    {{ percentage }}%
-                                </div>
-                            {% endwith %}
-                        {% else %}
-                            <div class="bar" style="width: 0%;">0%</div>
-                        {% endif %}
-                    {% endwith %}
+                    <div class="bar" style="width: {{ item.percentage }}%;">
+                        {{ item.percentage }}%
+                    </div>
                 </div>
             </div>
         {% endfor %}
     </div>
     
-    <a href="{% url 'polls:detail' question.id %}" class="btn">Vote again?</a>
+    {% if user_response %}
+    <div class="user-response">
+        <p>You voted for: <strong>{{ user_response.choice.choice_text }}</strong></p>
+    </div>
+    {% endif %}
+    
+    <div class="action-buttons">
+        <a href="{% url 'polls:detail' question.id %}" class="btn">Vote again?</a>
+        <a href="{% url 'polls:index' %}" class="btn btn-outline">Back to Questions</a>
+    </div>
 </div>
 
 <style>
+    .results {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .chart-container {
+        margin: 30px 0;
+        text-align: center;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    .results-chart {
+        max-width: 100%;
+        height: auto;
+    }
+    
     .results-list {
-        margin: 20px 0;
+        margin: 30px 0;
     }
+    
     .result-item {
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
+    
     .result-text {
-        margin-bottom: 5px;
+        margin-bottom: 10px;
+        font-weight: 500;
     }
+    
     .result-bar {
-        background: #eee;
-        border-radius: 4px;
-        height: 24px;
+        background: #f1f5f9;
+        border-radius: 6px;
+        height: 30px;
         width: 100%;
+        overflow: hidden;
     }
+    
     .bar {
-        background: #4a76a8;
+        background: linear-gradient(135deg, #4a76a8, #2c3e50);
         color: white;
         height: 100%;
-        border-radius: 4px;
-        padding: 0 8px;
+        border-radius: 6px;
+        padding: 0 12px;
         display: flex;
         align-items: center;
+        font-weight: 500;
+        transition: width 0.8s ease-in-out;
+    }
+    
+    .user-response {
+        background: #e6f7ff;
+        border-left: 4px solid #1890ff;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 4px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: #4a76a8;
+        border: 1px solid #4a76a8;
+    }
+    
+    .btn-outline:hover {
+        background: #f0f5fa;
     }
 </style>
 {% endblock %} 

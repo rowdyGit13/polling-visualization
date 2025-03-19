@@ -1,21 +1,165 @@
 {% extends "polls/base.html" %}
 
-{% block title %}Polls List{% endblock %}
+{% block title %}NBA Polls{% endblock %}
 
 {% block content %}
-<h2>Latest Questions</h2>
+<div class="hero">
+    <h1>NBA Basketball Polls</h1>
+    <p>Share your opinions on the hottest NBA topics and see what others think</p>
+</div>
 
-{% if latest_question_list %}
-    <div class="question-list">
-        {% for question in latest_question_list %}
-            <div class="question">
-                <h3>{{ question.question_text }}</h3>
-                <p><strong>Published:</strong> {{ question.pub_date }}</p>
-                <a href="{% url 'polls:detail' question.id %}" class="btn">Answer this question</a>
-            </div>
+<div class="categories">
+    <h2>Categories</h2>
+    <div class="category-list">
+        {% for category in categories %}
+            {% if category.category %}
+                <a href="{% url 'polls:category' category.category %}" class="category-item">
+                    {{ category.category }}
+                    <span class="count">{{ category.count }}</span>
+                </a>
+            {% endif %}
         {% endfor %}
     </div>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+</div>
+
+<div class="latest-polls">
+    <h2>Latest Questions</h2>
+    
+    {% if latest_question_list %}
+        <div class="question-list">
+            {% for question in latest_question_list %}
+                <div class="question">
+                    <h3>{{ question.question_text }}</h3>
+                    <div class="meta">
+                        {% if question.category %}
+                        <span class="category">{{ question.category }}</span>
+                        {% endif %}
+                        <span class="published">Published: {{ question.pub_date|date:"M d, Y" }}</span>
+                    </div>
+                    <a href="{% url 'polls:detail' question.id %}" class="btn">Answer this question</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No polls are available.</p>
+    {% endif %}
+</div>
+
+<style>
+    .hero {
+        text-align: center;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #1d428a, #051c2c);
+        color: white;
+        border-radius: 8px;
+        margin-bottom: 40px;
+    }
+    
+    .hero h1 {
+        font-size: 36px;
+        margin-bottom: 15px;
+    }
+    
+    .hero p {
+        font-size: 18px;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .categories {
+        margin-bottom: 40px;
+    }
+    
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .category-item {
+        background: white;
+        color: var(--text-dark);
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-weight: 500;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .category-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .count {
+        background: var(--primary);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 14px;
+        margin-left: 10px;
+    }
+    
+    .latest-polls h2 {
+        margin-bottom: 25px;
+    }
+    
+    .question-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+    
+    .question {
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .question:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    
+    .question h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+    
+    .meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        color: var(--text-light);
+        margin-bottom: 20px;
+    }
+    
+    .category {
+        background: #e6f7ff;
+        color: #096dd9;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+    
+    .btn {
+        margin-top: auto;
+    }
+    
+    @media (max-width: 768px) {
+        .question-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
 {% endblock %} 

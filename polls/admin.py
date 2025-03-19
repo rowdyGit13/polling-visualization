@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.utils.html import format_html
-from .models import Question, Choice, UserResponse, QuestionAnalytics, QuestionWithMetadata
+from .models import Question, Choice, UserResponse, QuestionAnalytics, QuestionWithMetadata, POSTGRES_AVAILABLE
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
@@ -67,7 +67,10 @@ class QuestionWithMetadataAdmin(admin.ModelAdmin):
     search_fields = ["question__question_text"]
     
     def display_tags(self, obj):
-        return ", ".join(obj.tags) if obj.tags else "No tags"
+        if POSTGRES_AVAILABLE:
+            return ", ".join(obj.tags) if obj.tags else "No tags"
+        else:
+            return obj.tags_text if obj.tags_text else "No tags"
     display_tags.short_description = 'Tags'
 
 admin.site.register(Question, QuestionAdmin)

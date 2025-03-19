@@ -19,27 +19,134 @@
         {% endif %}
         
         {% if user.is_authenticated %}
-            <form action="{% url 'polls:vote' question.id %}" method="post">
+            <form action="{% url 'polls:vote' question.id %}" method="post" class="vote-form">
                 {% csrf_token %}
                 <fieldset>
                     <legend>Select your answer:</legend>
                     {% for choice in question.choice_set.all %}
                         <div class="choice">
-                            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" required>
                             <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
                         </div>
                     {% endfor %}
                 </fieldset>
-                <input type="submit" value="Submit" class="btn">
+                <button type="submit" class="btn">Submit Answer</button>
             </form>
         {% else %}
-            <p>Please <a href="{% url 'login' %}">log in</a> to answer this question.</p>
+            <div class="login-prompt">
+                <p>Please <a href="{% url 'login' %}">log in</a> to answer this question.</p>
+            </div>
         {% endif %}
     {% endif %}
     
     <div class="navigation">
-        <a href="{% url 'polls:index' %}">Back to Questions</a>
-        <a href="{% url 'polls:results' question.id %}">View Results</a>
+        <a href="{% url 'polls:index' %}" class="btn btn-outline">Back to Questions</a>
+        <a href="{% url 'polls:results' question.id %}" class="btn btn-outline">View Results</a>
     </div>
 </div>
+
+<style>
+    .question-detail {
+        max-width: 700px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    }
+    
+    .question-detail h2 {
+        font-size: 24px;
+        margin-bottom: 25px;
+        color: var(--primary);
+    }
+    
+    .vote-form {
+        margin: 20px 0;
+    }
+    
+    fieldset {
+        border: none;
+        padding: 0;
+        margin: 0 0 20px 0;
+    }
+    
+    legend {
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+    
+    .choice {
+        margin-bottom: 12px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    
+    .choice:hover {
+        background: #f9f9f9;
+        border-color: #aaa;
+    }
+    
+    input[type="radio"] {
+        margin-right: 10px;
+    }
+    
+    label {
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    .navigation {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
+    }
+    
+    .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+    }
+    
+    .btn-outline:hover {
+        background: #f0f5fa;
+    }
+    
+    .error {
+        color: #dc3545;
+        margin-bottom: 15px;
+        padding: 10px;
+        background: #f8d7da;
+        border-radius: 4px;
+    }
+    
+    .user-response {
+        background: #e6f7ff;
+        border-left: 4px solid #1890ff;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-radius: 4px;
+    }
+    
+    .login-prompt {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .login-prompt a {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+    }
+    
+    .login-prompt a:hover {
+        text-decoration: underline;
+    }
+</style>
 {% endblock %} 

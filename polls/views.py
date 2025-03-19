@@ -9,7 +9,15 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
-from django.db.models import Count, F
+from django.db.models import Count, F, Sum, Q
+from django.contrib.auth.models import User
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
+import matplotlib.pyplot as plt
+import io
+import base64
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import numpy as np
 
 from .models import Question, Choice, UserResponse, QuestionAnalytics
 from .forms import CustomUserCreationForm
@@ -23,10 +31,17 @@ def index(request):
         # Only get published questions
         latest_question_list = Question.published.order_by("-pub_date")[:5]
         cache.set(cache_key, latest_question_list, 60 * 5)  # Cache for 5 minutes
+    
+    # Get categories, filtering out empty ones
+    categories = Question.objects.exclude(
+        Q(category__isnull=True) | Q(category='')
+    ).values('category').annotate(
+        count=Count('id')
+    ).order_by('category')
         
     context = {
         "latest_question_list": latest_question_list,
-        "categories": Question.objects.values('category').annotate(count=Count('id')).order_by('category'),
+        "categories": categories,
     }
     return render(request, "polls/index.html", context)
 
@@ -53,12 +68,78 @@ def detail(request, question_id):
 @cache_page(60 * 15)  # Cache for 15 minutes
 def results(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
-    total_votes = question.choice_set.aggregate(total=Sum('votes'))['total'] or 0
+    choices = list(question.choice_set.all())
+    total_votes = sum(choice.votes for choice in choices)
+    
+    # Calculate percentages
+    choices_with_percentage = []
+    for choice in choices:
+        if total_votes > 0:
+            percentage = round((choice.votes / total_votes) * 100)
+        else:
+            percentage = 0
+        choices_with_percentage.append({
+            'choice': choice,
+            'percentage': percentage
+        })
+    
+    # Generate matplotlib chart
+    chart_img = generate_results_chart(question, choices, total_votes)
+    
+    # Check if user has responded
+    user_response = None
+    if request.user.is_authenticated:
+        try:
+            user_response = UserResponse.objects.get(user=request.user, question=question)
+        except UserResponse.DoesNotExist:
+            pass
     
     return render(request, "polls/results.html", {
         "question": question,
-        "total_votes": total_votes
+        "choices_with_percentage": choices_with_percentage,
+        "total_votes": total_votes,
+        "chart_img": chart_img,
+        "user_response": user_response
     })
+
+def generate_results_chart(question, choices, total_votes):
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Data for plotting
+    labels = [choice.choice_text for choice in choices]
+    values = [choice.votes for choice in choices]
+    colors = plt.cm.viridis(np.linspace(0.1, 0.9, len(values)))
+    
+    # Create horizontal bar chart
+    bars = ax.barh(labels, values, color=colors)
+    
+    # Add values and percentage annotations
+    for bar in bars:
+        width = bar.get_width()
+        percentage = f'{(width/total_votes)*100:.1f}%' if total_votes > 0 else '0%'
+        ax.text(
+            width + 0.5, 
+            bar.get_y() + bar.get_height()/2, 
+            f'{int(width)} ({percentage})', 
+            va='center'
+        )
+    
+    # Customize chart
+    ax.set_title(f'Results: {question.question_text}', fontsize=14, pad=20)
+    ax.set_xlabel('Number of Votes', fontsize=12)
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    plt.tight_layout()
+    
+    # Convert plot to base64 image for template rendering
+    buffer = io.BytesIO()
+    canvas = FigureCanvas(fig)
+    canvas.print_png(buffer)
+    plt.close(fig)
+    
+    image_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return f'data:image/png;base64,{image_base64}'
 
 # Vote view to submit a response to a question
 @login_required
