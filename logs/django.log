@@ -439,3 +439,8 @@ INFO 2025-03-19 20:51:19,909 basehttp "GET / HTTP/1.1" 200 11538
 INFO 2025-03-19 20:51:26,484 basehttp "GET / HTTP/1.1" 200 11538
 INFO 2025-03-19 20:51:28,714 basehttp "GET /dashboard/ HTTP/1.1" 200 6566
 INFO 2025-03-19 20:51:31,826 basehttp "GET / HTTP/1.1" 200 11538
+INFO 2025-03-19 21:00:42,442 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
+INFO 2025-03-19 21:00:43,144 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 21:01:20,596 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/wsgi.py changed, reloading.
+INFO 2025-03-19 21:01:21,153 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 21:01:26,948 basehttp "GET / HTTP/1.1" 200 11538
