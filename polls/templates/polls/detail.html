@@ -1,0 +1,45 @@
+{% extends "polls/base.html" %}
+
+{% block title %}{{ question.question_text }}{% endblock %}
+
+{% block content %}
+<div class="question-detail">
+    <h2>{{ question.question_text }}</h2>
+    
+    {% if user_response %}
+        <div class="user-response">
+            <p>You have already answered this question:</p>
+            <p><strong>Your choice:</strong> {{ user_response.choice.choice_text }}</p>
+            <p><strong>Submitted:</strong> {{ user_response.response_date }}</p>
+            <a href="{% url 'polls:results' question.id %}" class="btn">View Results</a>
+        </div>
+    {% else %}
+        {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <form action="{% url 'polls:vote' question.id %}" method="post">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Select your answer:</legend>
+                    {% for choice in question.choice_set.all %}
+                        <div class="choice">
+                            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label>
+                        </div>
+                    {% endfor %}
+                </fieldset>
+                <input type="submit" value="Submit" class="btn">
+            </form>
+        {% else %}
+            <p>Please <a href="{% url 'login' %}">log in</a> to answer this question.</p>
+        {% endif %}
+    {% endif %}
+    
+    <div class="navigation">
+        <a href="{% url 'polls:index' %}">Back to Questions</a>
+        <a href="{% url 'polls:results' question.id %}">View Results</a>
+    </div>
+</div>
+{% endblock %} 

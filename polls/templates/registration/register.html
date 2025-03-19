@@ -1,0 +1,68 @@
+{% extends "polls/base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="register-form">
+    <h2>Register</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="help-text">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <input type="submit" value="Register" class="btn">
+    </form>
+    
+    <div class="links">
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+</div>
+
+<style>
+    .register-form {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+    .error {
+        color: #721c24;
+        font-size: 0.85em;
+        margin-top: 5px;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+    .help-text {
+        display: block;
+        font-size: 0.85em;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    .links {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %} 

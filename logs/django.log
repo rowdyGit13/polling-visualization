@@ -1,0 +1,5 @@
+INFO 2025-03-18 23:50:32,082 autoreload Watching for file changes with StatReloader
+INFO 2025-03-18 23:50:45,775 basehttp "GET / HTTP/1.1" 200 3146
+INFO 2025-03-18 23:50:52,996 basehttp "GET / HTTP/1.1" 200 3146
+INFO 2025-03-18 23:50:56,146 basehttp "GET /1/ HTTP/1.1" 200 3163
+INFO 2025-03-18 23:50:58,049 basehttp "GET / HTTP/1.1" 200 3146

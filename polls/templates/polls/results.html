@@ -1,0 +1,61 @@
+{% extends "polls/base.html" %}
+
+{% block title %}{{ question.question_text }} - Results{% endblock %}
+
+{% block content %}
+<div class="results">
+    <h2>{{ question.question_text }}</h2>
+    
+    <div class="results-list">
+        {% for choice in question.choice_set.all %}
+            <div class="result-item">
+                <div class="result-text">
+                    {{ choice.choice_text }} — {{ choice.votes }} vote{{ choice.votes|pluralize }}
+                </div>
+                <div class="result-bar">
+                    {% with total=question.choice_set.all|dictsort:"votes"|last|getattribute:"votes" %}
+                        {% if total > 0 %}
+                            {% with percentage=choice.votes|div:total|mul:100|floatformat:0 %}
+                                <div class="bar" style="width: {{ percentage }}%;">
+                                    {{ percentage }}%
+                                </div>
+                            {% endwith %}
+                        {% else %}
+                            <div class="bar" style="width: 0%;">0%</div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <a href="{% url 'polls:detail' question.id %}" class="btn">Vote again?</a>
+</div>
+
+<style>
+    .results-list {
+        margin: 20px 0;
+    }
+    .result-item {
+        margin-bottom: 10px;
+    }
+    .result-text {
+        margin-bottom: 5px;
+    }
+    .result-bar {
+        background: #eee;
+        border-radius: 4px;
+        height: 24px;
+        width: 100%;
+    }
+    .bar {
+        background: #4a76a8;
+        color: white;
+        height: 100%;
+        border-radius: 4px;
+        padding: 0 8px;
+        display: flex;
+        align-items: center;
+    }
+</style>
+{% endblock %} 

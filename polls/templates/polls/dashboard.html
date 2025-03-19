@@ -1,0 +1,41 @@
+{% extends "polls/base.html" %}
+
+{% block title %}My Responses{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>My Responses</h2>
+    
+    {% if user_responses %}
+        <div class="response-list">
+            {% for response in user_responses %}
+                <div class="response-item">
+                    <h3>{{ response.question.question_text }}</h3>
+                    <p><strong>Your answer:</strong> {{ response.choice.choice_text }}</p>
+                    <p><strong>Submitted:</strong> {{ response.response_date }}</p>
+                    <a href="{% url 'polls:results' response.question.id %}" class="btn">View Results</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>You haven't answered any questions yet.</p>
+        <a href="{% url 'polls:index' %}" class="btn">Browse Questions</a>
+    {% endif %}
+</div>
+
+<style>
+    .response-list {
+        margin-top: 20px;
+    }
+    .response-item {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .response-item h3 {
+        margin-top: 0;
+    }
+</style>
+{% endblock %} 
