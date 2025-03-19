@@ -446,3 +446,7 @@ INFO 2025-03-19 21:01:21,153 autoreload Watching for file changes with StatReloa
 INFO 2025-03-19 21:01:26,948 basehttp "GET / HTTP/1.1" 200 11538
 INFO 2025-03-19 21:08:58,657 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/urls.py changed, reloading.
 INFO 2025-03-19 21:08:59,332 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 21:22:23,876 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
+INFO 2025-03-19 21:22:24,501 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 21:22:59,931 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
+INFO 2025-03-19 21:23:00,465 autoreload Watching for file changes with StatReloader

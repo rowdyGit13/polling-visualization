@@ -1,11 +1,14 @@
-Django>=5.1.7
-psycopg2-binary>=2.9.9
-djangorestframework>=3.14.0
-django-cors-headers>=4.3.1
+django==5.1.7
+djangorestframework
+django-cors-headers
+django-celery-beat
+django-celery-results
+psycopg2-binary
+gunicorn
+whitenoise
+dj-database-url
 celery>=5.3.6
 redis>=5.0.1
-django-celery-beat>=2.5.0
-django-celery-results>=2.5.1
 flower>=2.0.1  # Celery monitoring tool
 pytest>=7.4.3
 pytest-django>=4.7.0
@@ -14,8 +17,6 @@ coverage>=7.3.2
 django-filter>=23.5
 matplotlib>=3.8.2  # Data visualization
 numpy>=1.26.3  # Required for matplotlib
-whitenoise>=6.6.0  # Serving static files
-gunicorn>=21.2.0  # Production WSGI server
 python-dotenv>=1.0.0  # Environment variable management
 black>=23.11.0  # Code formatting
 flake8>=6.1.0  # Code linting
