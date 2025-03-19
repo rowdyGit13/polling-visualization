@@ -29,7 +29,7 @@ urlpatterns = [
     
     # Authentication URLs
     path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
-    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='/', http_method_names=['get', 'post']), name='logout'),
     path('accounts/register/', polls_views.register, name='register'),
     
     # Password reset URLs

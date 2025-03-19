@@ -413,3 +413,29 @@ INFO 2025-03-19 20:24:58,724 basehttp "GET / HTTP/1.1" 200 11161
 WARNING 2025-03-19 20:25:02,714 base Method Not Allowed (GET): /accounts/logout/
 WARNING 2025-03-19 20:25:02,715 log Method Not Allowed: /accounts/logout/
 WARNING 2025-03-19 20:25:02,715 basehttp "GET /accounts/logout/ HTTP/1.1" 405 0
+INFO 2025-03-19 20:41:42,601 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/settings.py changed, reloading.
+INFO 2025-03-19 20:41:43,208 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 20:45:24,072 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/urls.py changed, reloading.
+INFO 2025-03-19 20:45:24,726 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 20:45:43,219 basehttp "GET / HTTP/1.1" 200 11161
+WARNING 2025-03-19 20:45:47,008 base Method Not Allowed (GET): /accounts/logout/
+WARNING 2025-03-19 20:45:47,027 log Method Not Allowed: /accounts/logout/
+WARNING 2025-03-19 20:45:47,028 basehttp "GET /accounts/logout/ HTTP/1.1" 405 0
+INFO 2025-03-19 20:47:00,463 autoreload /Users/sg44574/Dropbox/Coding/polling-visualization/mysite/urls.py changed, reloading.
+INFO 2025-03-19 20:47:00,947 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 20:48:01,645 basehttp "GET / HTTP/1.1" 200 11500
+INFO 2025-03-19 20:48:06,906 basehttp "POST /accounts/logout/ HTTP/1.1" 302 0
+INFO 2025-03-19 20:48:06,927 basehttp "GET / HTTP/1.1" 200 11154
+INFO 2025-03-19 20:48:11,526 basehttp "GET /accounts/login/ HTTP/1.1" 200 7440
+INFO 2025-03-19 20:48:18,791 basehttp "POST /accounts/login/ HTTP/1.1" 302 0
+INFO 2025-03-19 20:48:18,812 basehttp "GET / HTTP/1.1" 200 11500
+INFO 2025-03-19 20:50:19,640 basehttp "GET / HTTP/1.1" 200 11473
+INFO 2025-03-19 20:50:56,861 basehttp "GET / HTTP/1.1" 200 11538
+INFO 2025-03-19 20:51:08,490 basehttp "POST /accounts/logout/ HTTP/1.1" 302 0
+INFO 2025-03-19 20:51:08,597 basehttp "GET / HTTP/1.1" 200 11154
+INFO 2025-03-19 20:51:10,508 basehttp "GET /accounts/login/ HTTP/1.1" 200 7440
+INFO 2025-03-19 20:51:19,889 basehttp "POST /accounts/login/ HTTP/1.1" 302 0
+INFO 2025-03-19 20:51:19,909 basehttp "GET / HTTP/1.1" 200 11538
+INFO 2025-03-19 20:51:26,484 basehttp "GET / HTTP/1.1" 200 11538
+INFO 2025-03-19 20:51:28,714 basehttp "GET /dashboard/ HTTP/1.1" 200 6566
+INFO 2025-03-19 20:51:31,826 basehttp "GET / HTTP/1.1" 200 11538

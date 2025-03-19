@@ -179,7 +179,10 @@
                     <a href="{% url 'polls:index' %}" class="nav-link">Home</a>
                     {% if user.is_authenticated %}
                         <a href="{% url 'polls:dashboard' %}" class="nav-link">My Responses</a>
-                        <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                        <a href="{% url 'logout' %}" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                        <form id="logout-form" method="post" action="{% url 'logout' %}" style="display: none;">
+                            {% csrf_token %}
+                        </form>
                     {% else %}
                         <a href="{% url 'login' %}" class="nav-link">Login</a>
                         <a href="{% url 'polls:register' %}" class="nav-link">Register</a>
