@@ -70,6 +70,16 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Add debug toolbar only in development (not on Vercel)
+if DEBUG and os.environ.get('VERCEL_DEPLOYMENT') != 'true':
+    try:
+        import debug_toolbar
+        INSTALLED_APPS.append('debug_toolbar')
+        MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+        INTERNAL_IPS = ['127.0.0.1']
+    except ImportError:
+        pass
+
 ROOT_URLCONF = 'mysite.urls'
 
 TEMPLATES = [

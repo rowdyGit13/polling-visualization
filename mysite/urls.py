@@ -49,9 +49,9 @@ if settings.DEBUG:
     
     # Enable Django Debug Toolbar if installed
     try:
-        import debug_toolbar
+        from debug_toolbar import urls as debug_toolbar_urls
         urlpatterns += [
-            path('__debug__/', include(debug_toolbar.urls)),
+            path('__debug__/', include(debug_toolbar_urls)),
         ]
     except ImportError:
         pass
